@@ -42,7 +42,9 @@ async function bootstrap() {
     try {
       const { cidade, atividadeId } = req.body;
       if (!cidade || !atividadeId) {
-        return res.status(400).json({ message: 'Cidade e atividadeId são obrigatórios.' });
+        return res
+          .status(400)
+          .json({ message: 'Cidade e atividadeId são obrigatórios.' });
       }
       const novoCard = await cardService.criarCard(cidade, atividadeId);
       res.status(201).json(novoCard);
@@ -84,12 +86,11 @@ async function bootstrap() {
   app.get('/cards/:id/forecast', async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       // Delega TODA a lógica para o serviço
       const previsaoComEstrategia = await cardService.obterPrevisaoParaCard(id);
-      
-      res.json(previsaoComEstrategia);
 
+      res.json(previsaoComEstrategia);
     } catch (error: any) {
       // Se o service der 'throw', nós o capturamos aqui
       if (error.message === 'Card não encontrado.') {
@@ -103,7 +104,9 @@ async function bootstrap() {
 
   // Inicia o servidor
   app.listen(port, () => {
-    console.log(`⚡️ Servidor ClimaStrategy rodando em http://localhost:${port}`);
+    console.log(
+      `⚡️ Servidor ClimaStrategy rodando em http://localhost:${port}`,
+    );
   });
 }
 
