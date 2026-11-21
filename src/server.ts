@@ -2,7 +2,6 @@ import 'dotenv/config'; // Carrega o .env (API KEY)
 import express from 'express';
 import cors from 'cors';
 import { CardService } from './services/CardService';
-import { prisma } from './prismaClient'; // Importamos o prisma para o GET de forecast
 
 // Função principal para iniciar o servidor
 async function bootstrap() {
@@ -43,7 +42,9 @@ async function bootstrap() {
     try {
       const { cidade, atividadeId } = req.body;
       if (!cidade || !atividadeId) {
-        return res.status(400).json({ message: 'Cidade e atividadeId são obrigatórios.' });
+        return res
+          .status(400)
+          .json({ message: 'Cidade e atividadeId são obrigatórios.' });
       }
       const novoCard = await cardService.criarCard(cidade, atividadeId);
       res.status(201).json(novoCard);
@@ -85,12 +86,11 @@ async function bootstrap() {
   app.get('/cards/:id/forecast', async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       // Delega TODA a lógica para o serviço
       const previsaoComEstrategia = await cardService.obterPrevisaoParaCard(id);
-      
-      res.json(previsaoComEstrategia);
 
+      res.json(previsaoComEstrategia);
     } catch (error: any) {
       // Se o service der 'throw', nós o capturamos aqui
       if (error.message === 'Card não encontrado.') {
@@ -104,7 +104,9 @@ async function bootstrap() {
 
   // Inicia o servidor
   app.listen(port, () => {
-    console.log(`⚡️ Servidor ClimaStrategy rodando em http://localhost:${port}`);
+    console.log(
+      `⚡️ Servidor ClimaStrategy rodando em http://localhost:${port}`,
+    );
   });
 }
 

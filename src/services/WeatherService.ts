@@ -19,7 +19,9 @@ export class WeatherService {
    * Usamos o endpoint /forecast, pois ele nos dá a 'pop'
    * (Probabilidade de Precipitação), que é um requisito.
    */
-  async buscarClima(cidade: string): Promise<{ dados: DadosClima, nomeCidade: string }> {
+  async buscarClima(
+    cidade: string,
+  ): Promise<{ dados: DadosClima; nomeCidade: string }> {
     try {
       const resposta = await axios.get(this.baseUrl, {
         params: {
@@ -31,7 +33,7 @@ export class WeatherService {
       });
 
       const previsaoAtual = resposta.data.list[0];
-      
+
       // *** NOVA LINHA: Captura o nome da cidade da resposta da API ***
       const nomeCidadeCorrigido = resposta.data.city.name;
 
@@ -44,9 +46,14 @@ export class WeatherService {
 
       // *** MODIFICADO: Retorna o objeto completo ***
       return { dados: dadosAdaptados, nomeCidade: nomeCidadeCorrigido };
-
     } catch (error: any) {
-      // ... (bloco catch inalterado)
+      console.error(
+        'Erro ao buscar clima:',
+        error.response?.data?.message || error.message,
+      );
+      throw new Error(
+        'Não foi possível obter o clima para a cidade informada.',
+      );
     }
   }
 
@@ -80,14 +87,17 @@ export class WeatherService {
             velocidadeVento: previsao.wind.speed * 3.6,
             probabilidadeChuva: previsao.pop * 100,
             // Adiciona a data para o frontend saber
-            data: previsao.dt_txt, 
+            data: previsao.dt_txt,
           });
         }
       }
 
       return previsoesDiarias;
     } catch (error: any) {
-      console.error('Erro ao buscar previsão futura:', error.response?.data?.message || error.message);
+      console.error(
+        'Erro ao buscar previsão futura:',
+        error.response?.data?.message || error.message,
+      );
       throw new Error('Não foi possível obter a previsão futura.');
     }
   }
