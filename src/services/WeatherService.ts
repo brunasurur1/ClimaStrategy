@@ -45,9 +45,11 @@ export class WeatherService {
       // *** MODIFICADO: Retorna o objeto completo ***
       return { dados: dadosAdaptados, nomeCidade: nomeCidadeCorrigido };
 
-    } catch (error: any) {
-      // ... (bloco catch inalterado)
+    }  catch (error: any) {
+      console.error('Erro ao buscar clima:', error.response?.data?.message || error.message);
+      throw new Error('Não foi possível obter o clima para a cidade informada.');
     }
+    
   }
 
   async buscarPrevisaoFutura(cidade: string): Promise<DadosClima[]> {

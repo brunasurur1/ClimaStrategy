@@ -2,7 +2,6 @@ import 'dotenv/config'; // Carrega o .env (API KEY)
 import express from 'express';
 import cors from 'cors';
 import { CardService } from './services/CardService';
-import { prisma } from './prismaClient'; // Importamos o prisma para o GET de forecast
 
 // Função principal para iniciar o servidor
 async function bootstrap() {
