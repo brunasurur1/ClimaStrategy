@@ -11,13 +11,14 @@ export class CardService {
     this.tradutorClima = new TradutorClima();
   }
 
-  //Cria um novo card, buscando o clima e aplicando a estratégia.
+  // Cria um novo card, buscando o clima e aplicando a estratégia.
 
   async criarCard(cidade: string, atividadeId: string) {
     // 1. Buscar o nome da atividade no banco
     const atividade = await prisma.atividade.findUnique({
       where: { id: atividadeId },
     });
+
     if (!atividade) {
       throw new Error('Atividade não encontrada.');
     }
@@ -35,21 +36,17 @@ export class CardService {
     });
 
     if (cardExistente) {
-      // Verifica se já tem um card dessa cidade
-      // Se tiver, a gente deleta o antigo para o novo ficar no topo da lista atualizado
+      // Remove o card antigo para que o novo fique no topo da lista
       await prisma.card.delete({
         where: { id: cardExistente.id },
       });
     }
 
-    // Precisamos converter os nomes dos campos para bater com o IEstrategia
-    const fraseResultado = this.tradutorClima.processar(atividade.nome, {
-      temp: dadosClima.temperatura,
-      umidade: dadosClima.umidade,
-      vento: dadosClima.velocidadeVento,
-      chuva: dadosClima.probabilidadeChuva,
-      data: new Date().toISOString(),
-    });
+    // 3. Aplicar a estratégia utilizando a interface climática unificada
+    const fraseResultado = this.tradutorClima.processar(
+      atividade.nome,
+      dadosClima,
+    );
 
     // 4. Salvar o Card e o Histórico em uma Transação
     const [cardSalvo] = await prisma.$transaction([
@@ -79,7 +76,7 @@ export class CardService {
     return cardSalvo;
   }
 
-  //Lista todos os cards salvos.
+  // Lista todos os cards salvos.
 
   async listarCards() {
     return prisma.card.findMany({
@@ -92,7 +89,7 @@ export class CardService {
     });
   }
 
-  // Lista as atividades disponíveis para o frontend
+  // Lista as atividades disponíveis para o frontend.
 
   async listarAtividades() {
     return prisma.atividade.findMany();
@@ -114,15 +111,9 @@ export class CardService {
       card.cidade,
     );
 
-    // 3. Aplicar a Estratégia em CADA dia da previsão
+    // 3. Aplicar a estratégia em cada dia da previsão
     const resultados = previsoes.map((dadosDia) => {
-      const frase = this.tradutorClima.processar(card.atividade.nome, {
-        temp: dadosDia.temperatura,
-        umidade: dadosDia.umidade,
-        vento: dadosDia.velocidadeVento,
-        chuva: dadosDia.probabilidadeChuva,
-        data: dadosDia.data || new Date().toISOString(),
-      });
+      const frase = this.tradutorClima.processar(card.atividade.nome, dadosDia);
 
       return {
         data: dadosDia.data,
@@ -150,20 +141,14 @@ export class CardService {
       throw new Error('Card não encontrado.');
     }
 
-    // 2. Busca o clima ATUALIZADO
+    // 2. Busca o clima atualizado
     const { dados: dadosClima, nomeCidade } =
       await this.weatherService.buscarClima(cardAtual.cidade);
 
-    // 3. Faz a avaliação da estratégia com o Tradutor
+    // 3. Faz a avaliação utilizando a interface climática unificada
     const fraseResultado = this.tradutorClima.processar(
       cardAtual.atividade.nome,
-      {
-        temp: dadosClima.temperatura,
-        umidade: dadosClima.umidade,
-        vento: dadosClima.velocidadeVento,
-        chuva: dadosClima.probabilidadeChuva,
-        data: new Date().toISOString(),
-      },
+      dadosClima,
     );
 
     // 4. Atualiza o Card e loga no Histórico

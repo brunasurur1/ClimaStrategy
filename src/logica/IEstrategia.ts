@@ -1,13 +1,8 @@
-// Definição dos dados vêm da API de clima
-export interface DadosClima {
-  temp: number; // Temperatura
-  umidade: number; // Umidade %
-  vento: number; // Velocidade do vento
-  chuva: number; // Chance de chuva %
-  data: string;
-}
+import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
 
-// Essa é a Interface
+/**
+ * Contrato utilizado pelas estratégias de avaliação climática.
+ */
 export interface IEstrategia {
-  avaliar(clima: DadosClima): string;
+  avaliar(clima: CondicoesClimaticas): string;
 }

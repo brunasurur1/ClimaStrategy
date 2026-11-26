@@ -1,15 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { TradutorClima } from '../../src/logica/TradutorClima';
-import type { DadosClima } from '../../src/logica/IEstrategia';
-
+import type { CondicoesClimaticas } from '../../src/interfaces/clima.interfaces';
 describe('TradutorClima', () => {
   const tradutor = new TradutorClima();
 
-  const climaBase: DadosClima = {
-    temp: 25,
+  const climaBase: CondicoesClimaticas = {
+    temperatura: 25,
     umidade: 60,
-    vento: 10,
-    chuva: 0,
+    velocidadeVento: 10,
+    probabilidadeChuva: 0,
     data: '2026-11-25',
   };
 

@@ -1,40 +1,44 @@
-import { IEstrategia, DadosClima } from './IEstrategia';
+import type { IEstrategia } from './IEstrategia';
+import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
 
-// Lógica para CORRER
 export class EstrategiaCorrer implements IEstrategia {
-  avaliar(clima: DadosClima): string {
-    if (clima.chuva > 50) {
+  avaliar(clima: CondicoesClimaticas): string {
+    if (clima.probabilidadeChuva > 50) {
       return '🌧️ Melhor evitar: Alta chance de chuva e pista escorregadia.';
     }
-    if (clima.temp > 30) {
+
+    if (clima.temperatura > 30) {
       return '🥵 Atenção: Calor excessivo! Hidrate-se muito ou corra na esteira.';
     }
+
     return '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.';
   }
 }
 
-// Lógica para PRAIA
 export class EstrategiaPraia implements IEstrategia {
-  avaliar(clima: DadosClima): string {
-    if (clima.temp < 23) {
+  avaliar(clima: CondicoesClimaticas): string {
+    if (clima.temperatura < 23) {
       return '🥶 Está um pouco frio para pegar sol/mar hoje.';
     }
-    if (clima.chuva > 30) {
+
+    if (clima.probabilidadeChuva > 30) {
       return '☁️ O tempo está fechando. Risco de perder a viagem.';
     }
+
     return '🏖️ Dia lindo! Não esqueça o protetor solar.';
   }
 }
 
-// Lógica para PIQUENIQUE
 export class EstrategiaPiquenique implements IEstrategia {
-  avaliar(clima: DadosClima): string {
-    if (clima.vento > 20) {
+  avaliar(clima: CondicoesClimaticas): string {
+    if (clima.velocidadeVento > 20) {
       return '🌬️ Vento muito forte! Vai ser difícil segurar as toalhas.';
     }
-    if (clima.chuva > 40) {
+
+    if (clima.probabilidadeChuva > 40) {
       return '☔ Risco de chuva. Piquenique em local coberto seria melhor.';
     }
+
     return '🧺 O parque espera por você! Ótimo clima.';
   }
 }

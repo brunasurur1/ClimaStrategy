@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { DadosClima } from '../interfaces/clima.interfaces';
+import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
 
 export class WeatherService {
   private readonly apiKey: string;
@@ -14,14 +14,14 @@ export class WeatherService {
 
   /**
    * Busca a previsão do tempo para uma cidade e a adapta
-   * para a nossa interface 'DadosClima'.
+   * para a nossa interface 'CondicoesClimaticas'.
    *
    * Usamos o endpoint /forecast, pois ele nos dá a 'pop'
    * (Probabilidade de Precipitação), que é um requisito.
    */
   async buscarClima(
     cidade: string,
-  ): Promise<{ dados: DadosClima; nomeCidade: string }> {
+  ): Promise<{ dados: CondicoesClimaticas; nomeCidade: string }> {
     try {
       const resposta = await axios.get(this.baseUrl, {
         params: {
@@ -37,7 +37,7 @@ export class WeatherService {
       // *** NOVA LINHA: Captura o nome da cidade da resposta da API ***
       const nomeCidadeCorrigido = resposta.data.city.name;
 
-      const dadosAdaptados: DadosClima = {
+      const dadosAdaptados: CondicoesClimaticas = {
         temperatura: previsaoAtual.main.temp,
         umidade: previsaoAtual.main.humidity,
         velocidadeVento: previsaoAtual.wind.speed * 3.6,
@@ -57,7 +57,7 @@ export class WeatherService {
     }
   }
 
-  async buscarPrevisaoFutura(cidade: string): Promise<DadosClima[]> {
+  async buscarPrevisaoFutura(cidade: string): Promise<CondicoesClimaticas[]> {
     try {
       const resposta = await axios.get(this.baseUrl, {
         params: {
@@ -68,7 +68,7 @@ export class WeatherService {
         },
       });
 
-      const previsoesDiarias: DadosClima[] = [];
+      const previsoesDiarias: CondicoesClimaticas[] = [];
       const diasProcessados = new Set<string>();
 
       // O 'list' contém previsões a cada 3h
