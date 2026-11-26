@@ -146,6 +146,39 @@ describe('POST /cards', () => {
     expect(mock.isDone()).toBe(true);
   });
 
+  // Teste complementar: substituição de card repetido
+  it('substitui um card repetido da mesma cidade e atividade', async () => {
+    const cardAntigo = await criarCardTeste();
+
+    const mock = simularClima('São Paulo', {
+      temperatura: 28,
+      umidade: 70,
+      vento: 5,
+      chuva: 0.2,
+    });
+
+    const resposta = await request(app).post('/cards').send({
+      cidade: 'São Paulo',
+      atividadeId: cardAntigo.atividadeId,
+    });
+
+    expect(resposta.status).toBe(201);
+    expect(resposta.body.id).not.toBe(cardAntigo.id);
+    expect(mock.isDone()).toBe(true);
+
+    const cards = await prisma.card.findMany();
+
+    expect(cards).toHaveLength(1);
+    expect(cards[0].id).toBe(resposta.body.id);
+    expect(cards[0].temperatura).toBe(28);
+
+    const cardRemovido = await prisma.card.findUnique({
+      where: { id: cardAntigo.id },
+    });
+
+    expect(cardRemovido).toBeNull();
+  });
+
   it('retorna status 400 quando a cidade não é informada', async () => {
     const atividade = await prisma.atividade.findUniqueOrThrow({
       where: { nome: 'Correr' },
