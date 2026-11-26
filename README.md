@@ -128,6 +128,22 @@ Dois programas independentes que conversam por HTTP:
 
 ---
 
+## Verificações locais
+
+O CI (GitHub Actions) roda as mesmas verificações abaixo a cada PR e a cada push na `main`.
+Rode localmente antes de abrir o PR:
+
+```bash
+npm ci
+npx prisma generate
+npm run typecheck
+npm run test:unit
+npm run test:integration
+```
+
+Os testes de integração usam um SQLite de teste e simulam a OpenWeather com `nock`,
+então não precisam de chave real nem de internet.
+
 ## Limitações conhecidas e próximos passos
 
 O trabalho de melhoria está dividido em issues, em quatro fases:
