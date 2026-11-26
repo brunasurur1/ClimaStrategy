@@ -1,4 +1,6 @@
-import { IEstrategia, DadosClima } from './IEstrategia';
+import type { IEstrategia } from './IEstrategia';
+import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
+
 import {
   EstrategiaCorrer,
   EstrategiaPraia,
@@ -6,22 +8,23 @@ import {
 } from './EstrategiasConcretas';
 
 export class TradutorClima {
-  // Este método recebe a atividade e os dados do clima
-  public processar(atividade: string, clima: DadosClima): string {
+  public processar(atividade: string, clima: CondicoesClimaticas): string {
     let estrategia: IEstrategia;
 
-    // Escolher a classe certa
     switch (atividade.toLowerCase()) {
       case 'correr':
         estrategia = new EstrategiaCorrer();
         break;
+
       case 'praia':
       case 'praia/piscina':
         estrategia = new EstrategiaPraia();
         break;
+
       case 'piquenique':
         estrategia = new EstrategiaPiquenique();
         break;
+
       default:
         return 'Atividade não reconhecida no sistema.';
     }

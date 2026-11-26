@@ -1,19 +1,20 @@
 /**
- * Dados de entrada para qualquer estratégia.
- * É o "Contexto" que o Padrão Strategy utiliza.
+ * Representa as condições climáticas utilizadas
+ * pelos serviços e pelas estratégias de avaliação.
  */
-export interface DadosClima {
-  temperatura: number; // Em Celsius
-  umidade: number; // Em %
-  velocidadeVento: number; // Em km/h
-  probabilidadeChuva: number; // Em % (0-100)
-  data?: string; // <-- ADICIONE ESTA LINHA (opcional)
-}
+export interface CondicoesClimaticas {
+  /** Temperatura em graus Celsius (°C). */
+  temperatura: number;
 
-/**
- * Dados de saída de qualquer estratégia.
- */
-export interface ResultadoVerificacao {
-  apropriado: boolean;
-  justificativa?: string; // Motivo (ex: "Muito quente para correr")
+  /** Umidade relativa do ar em porcentagem (0-100). */
+  umidade: number;
+
+  /** Velocidade do vento em quilômetros por hora (km/h). */
+  velocidadeVento: number;
+
+  /** Probabilidade de precipitação em porcentagem (0-100). */
+  probabilidadeChuva: number;
+
+  /** Data da previsão, quando disponível. */
+  data?: string;
 }
