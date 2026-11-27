@@ -1,4 +1,5 @@
-import type { IEstrategia } from './IEstrategia';
+import { criarResultado } from './IEstrategia';
+import type { IEstrategia, ResultadoAvaliacao } from './IEstrategia';
 import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
 
 import {
@@ -8,7 +9,10 @@ import {
 } from './EstrategiasConcretas';
 
 export class TradutorClima {
-  public processar(atividade: string, clima: CondicoesClimaticas): string {
+  public processar(
+    atividade: string,
+    clima: CondicoesClimaticas,
+  ): ResultadoAvaliacao {
     let estrategia: IEstrategia;
 
     switch (atividade.toLowerCase()) {
@@ -26,7 +30,7 @@ export class TradutorClima {
         break;
 
       default:
-        return 'Atividade não reconhecida no sistema.';
+        return criarResultado('ATIVIDADE_DESCONHECIDA');
     }
 
     return estrategia.avaliar(clima);

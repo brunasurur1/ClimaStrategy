@@ -28,7 +28,7 @@ async function criarCardTeste(cidade = 'São Paulo') {
       umidade: 60,
       velocidadeVento: 18,
       precipitacaoProbabilidade: 10,
-      condicaoAtual: '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.',
+      condicaoAtual: 'FAVORAVEL',
     },
   });
 }
@@ -134,7 +134,7 @@ describe('POST /cards', () => {
       umidade: 60,
       velocidadeVento: 18,
       precipitacaoProbabilidade: 10,
-      condicaoAtual: '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.',
+      condicaoAtual: 'FAVORAVEL',
     });
 
     const cardSalvo = await prisma.card.findUnique({
@@ -353,8 +353,7 @@ describe('PUT /cards/:id', () => {
       umidade: 80,
       velocidadeVento: 36,
       precipitacaoProbabilidade: 70,
-      condicaoAtual:
-        '🌧️ Melhor evitar: Alta chance de chuva e pista escorregadia.',
+      condicaoAtual: 'CHUVA_FORTE',
     });
 
     const cardAtualizado = await prisma.card.findUniqueOrThrow({
@@ -518,17 +517,20 @@ describe('GET /cards/:id/forecast', () => {
 
     expect(resposta.status).toBe(200);
 
-    expect(resposta.body[0].resultado.justificativa).toBe(
-      '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.',
-    );
+    expect(resposta.body[0].resultado).toEqual({
+      apropriado: true,
+      motivo: 'FAVORAVEL',
+    });
 
-    expect(resposta.body[1].resultado.justificativa).toBe(
-      '🌧️ Melhor evitar: Alta chance de chuva e pista escorregadia.',
-    );
+    expect(resposta.body[1].resultado).toEqual({
+      apropriado: false,
+      motivo: 'CHUVA_FORTE',
+    });
 
-    expect(resposta.body[2].resultado.justificativa).toBe(
-      '🥵 Atenção: Calor excessivo! Hidrate-se muito ou corra na esteira.',
-    );
+    expect(resposta.body[2].resultado).toEqual({
+      apropriado: false,
+      motivo: 'CALOR_EXCESSIVO',
+    });
 
     expect(mock.isDone()).toBe(true);
   });
@@ -608,22 +610,18 @@ describe('Falhas conhecidas da API', () => {
     },
   );
 
-  // Atualmente retorna apropriado: true
-  // independentemente das condições climáticas.
-  it.fails(
-    'forecast deve indicar apropriado false em condições desfavoráveis',
-    async () => {
-      const card = await criarCardTeste();
+  // Agora o forecast reflete a estratégia de cada dia (issue #7).
+  it('forecast deve indicar apropriado false em condições desfavoráveis', async () => {
+    const card = await criarCardTeste();
 
-      const mock = simularPrevisao('São Paulo');
+    const mock = simularPrevisao('São Paulo');
 
-      const resposta = await request(app).get(`/cards/${card.id}/forecast`);
+    const resposta = await request(app).get(`/cards/${card.id}/forecast`);
 
-      expect(resposta.status).toBe(200);
-      expect(mock.isDone()).toBe(true);
-      expect(resposta.body).toHaveLength(3);
+    expect(resposta.status).toBe(200);
+    expect(mock.isDone()).toBe(true);
+    expect(resposta.body).toHaveLength(3);
 
-      expect(resposta.body[1].resultado.apropriado).toBe(false);
-    },
-  );
+    expect(resposta.body[1].resultado.apropriado).toBe(false);
+  });
 });

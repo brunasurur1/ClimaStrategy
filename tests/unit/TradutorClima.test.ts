@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { TradutorClima } from '../../src/logica/TradutorClima';
 import type { CondicoesClimaticas } from '../../src/interfaces/clima.interfaces';
+
 describe('TradutorClima', () => {
   const tradutor = new TradutorClima();
 
@@ -12,39 +13,34 @@ describe('TradutorClima', () => {
     data: '2026-11-25',
   };
 
+  const favoravel = { apropriado: true, motivo: 'FAVORAVEL' };
+
   it('seleciona a estratégia de corrida', () => {
-    expect(tradutor.processar('Correr', climaBase)).toBe(
-      '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.',
-    );
+    expect(tradutor.processar('Correr', climaBase)).toEqual(favoravel);
   });
 
   it('seleciona a estratégia de praia', () => {
-    expect(tradutor.processar('Praia', climaBase)).toBe(
-      '🏖️ Dia lindo! Não esqueça o protetor solar.',
-    );
+    expect(tradutor.processar('Praia', climaBase)).toEqual(favoravel);
   });
 
   it('seleciona a estratégia de piquenique', () => {
-    expect(tradutor.processar('Piquenique', climaBase)).toBe(
-      '🧺 O parque espera por você! Ótimo clima.',
-    );
+    expect(tradutor.processar('Piquenique', climaBase)).toEqual(favoravel);
   });
 
   it('reconhece o alias Praia/Piscina', () => {
-    expect(tradutor.processar('Praia/Piscina', climaBase)).toBe(
+    expect(tradutor.processar('Praia/Piscina', climaBase)).toEqual(
       tradutor.processar('Praia', climaBase),
     );
   });
 
-  it('retorna uma mensagem para atividade desconhecida', () => {
-    expect(tradutor.processar('Futebol', climaBase)).toBe(
-      'Atividade não reconhecida no sistema.',
-    );
+  it('retorna motivo de atividade desconhecida para atividade não mapeada', () => {
+    expect(tradutor.processar('Futebol', climaBase)).toEqual({
+      apropriado: false,
+      motivo: 'ATIVIDADE_DESCONHECIDA',
+    });
   });
 
   it('reconhece atividades independentemente de maiúsculas e minúsculas', () => {
-    expect(tradutor.processar('CoRrEr', climaBase)).toBe(
-      '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.',
-    );
+    expect(tradutor.processar('CoRrEr', climaBase)).toEqual(favoravel);
   });
 });

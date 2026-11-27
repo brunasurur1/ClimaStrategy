@@ -1,44 +1,58 @@
-import type { IEstrategia } from './IEstrategia';
+import { criarResultado } from './IEstrategia';
+import type { IEstrategia, ResultadoAvaliacao } from './IEstrategia';
 import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
 
+/**
+ * Limites de cada atividade (antes eram números mágicos).
+ * Unidades: temperatura em °C, vento em km/h, chuva em % (0-100).
+ */
+const CORRER_CHUVA_MAX = 50;
+const CORRER_TEMP_MAX = 30;
+
+const PRAIA_TEMP_MIN = 23;
+const PRAIA_CHUVA_MAX = 30;
+
+const PIQUENIQUE_VENTO_MAX = 20;
+const PIQUENIQUE_CHUVA_MAX = 40;
+
 export class EstrategiaCorrer implements IEstrategia {
-  avaliar(clima: CondicoesClimaticas): string {
-    if (clima.probabilidadeChuva > 50) {
-      return '🌧️ Melhor evitar: Alta chance de chuva e pista escorregadia.';
+  avaliar(clima: CondicoesClimaticas): ResultadoAvaliacao {
+    if (clima.probabilidadeChuva > CORRER_CHUVA_MAX) {
+      return criarResultado('CHUVA_FORTE');
     }
 
-    if (clima.temperatura > 30) {
-      return '🥵 Atenção: Calor excessivo! Hidrate-se muito ou corra na esteira.';
+    if (clima.temperatura > CORRER_TEMP_MAX) {
+      return criarResultado('CALOR_EXCESSIVO');
     }
 
-    return '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.';
+    return criarResultado('FAVORAVEL');
   }
 }
 
 export class EstrategiaPraia implements IEstrategia {
-  avaliar(clima: CondicoesClimaticas): string {
-    if (clima.temperatura < 23) {
-      return '🥶 Está um pouco frio para pegar sol/mar hoje.';
+  avaliar(clima: CondicoesClimaticas): ResultadoAvaliacao {
+    if (clima.temperatura < PRAIA_TEMP_MIN) {
+      return criarResultado('FRIO');
     }
 
-    if (clima.probabilidadeChuva > 30) {
-      return '☁️ O tempo está fechando. Risco de perder a viagem.';
+    if (clima.probabilidadeChuva > PRAIA_CHUVA_MAX) {
+      return criarResultado('CHUVA_FORTE');
     }
 
-    return '🏖️ Dia lindo! Não esqueça o protetor solar.';
+    return criarResultado('FAVORAVEL');
   }
 }
 
 export class EstrategiaPiquenique implements IEstrategia {
-  avaliar(clima: CondicoesClimaticas): string {
-    if (clima.velocidadeVento > 20) {
-      return '🌬️ Vento muito forte! Vai ser difícil segurar as toalhas.';
+  avaliar(clima: CondicoesClimaticas): ResultadoAvaliacao {
+    if (clima.velocidadeVento > PIQUENIQUE_VENTO_MAX) {
+      return criarResultado('VENTO_FORTE');
     }
 
-    if (clima.probabilidadeChuva > 40) {
-      return '☔ Risco de chuva. Piquenique em local coberto seria melhor.';
+    if (clima.probabilidadeChuva > PIQUENIQUE_CHUVA_MAX) {
+      return criarResultado('CHUVA_FORTE');
     }
 
-    return '🧺 O parque espera por você! Ótimo clima.';
+    return criarResultado('FAVORAVEL');
   }
 }

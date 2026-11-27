@@ -43,10 +43,7 @@ export class CardService {
     }
 
     // 3. Aplicar a estratégia utilizando a interface climática unificada
-    const fraseResultado = this.tradutorClima.processar(
-      atividade.nome,
-      dadosClima,
-    );
+    const resultado = this.tradutorClima.processar(atividade.nome, dadosClima);
 
     // 4. Salvar o Card e o Histórico em uma Transação
     const [cardSalvo] = await prisma.$transaction([
@@ -59,7 +56,7 @@ export class CardService {
           umidade: dadosClima.umidade,
           velocidadeVento: dadosClima.velocidadeVento,
           precipitacaoProbabilidade: dadosClima.probabilidadeChuva,
-          condicaoAtual: fraseResultado,
+          condicaoAtual: resultado.motivo,
         },
       }),
 
@@ -113,14 +110,17 @@ export class CardService {
 
     // 3. Aplicar a estratégia em cada dia da previsão
     const resultados = previsoes.map((dadosDia) => {
-      const frase = this.tradutorClima.processar(card.atividade.nome, dadosDia);
+      const resultado = this.tradutorClima.processar(
+        card.atividade.nome,
+        dadosDia,
+      );
 
       return {
         data: dadosDia.data,
         dadosClima: dadosDia,
         resultado: {
-          apropriado: true,
-          justificativa: frase,
+          apropriado: resultado.apropriado,
+          motivo: resultado.motivo,
         },
       };
     });
@@ -146,7 +146,7 @@ export class CardService {
       await this.weatherService.buscarClima(cardAtual.cidade);
 
     // 3. Faz a avaliação utilizando a interface climática unificada
-    const fraseResultado = this.tradutorClima.processar(
+    const resultado = this.tradutorClima.processar(
       cardAtual.atividade.nome,
       dadosClima,
     );
@@ -161,7 +161,7 @@ export class CardService {
           umidade: dadosClima.umidade,
           velocidadeVento: dadosClima.velocidadeVento,
           precipitacaoProbabilidade: dadosClima.probabilidadeChuva,
-          condicaoAtual: fraseResultado,
+          condicaoAtual: resultado.motivo,
         },
       }),
 
