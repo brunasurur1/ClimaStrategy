@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { CondicoesClimaticas } from '../domain/interfaces/CondicoesClimaticas';
+import type { ProvedorClima } from '../domain/interfaces/ProvedorClima';
 
 const MS_PARA_KMH = 3.6;
 const TIMEOUT_MS = 5000;
@@ -16,7 +17,7 @@ interface RespostaForecast {
   city: { name: string };
 }
 
-export class WeatherService {
+export class OpenWeatherClient implements ProvedorClima {
   private readonly apiKey: string;
   private readonly baseUrl = 'https://api.openweathermap.org/data/2.5/forecast';
 
