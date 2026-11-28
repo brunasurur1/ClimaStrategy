@@ -179,6 +179,59 @@ describe('POST /cards', () => {
     expect(cardRemovido).toBeNull();
   });
 
+  it('preserva o card antigo quando a recriação falha na transação (rollback)', async () => {
+    const cardAntigo = await criarCardTeste('São Paulo');
+
+    const mock = simularClima('São Paulo', {
+      temperatura: 28,
+      umidade: 70,
+      vento: 5,
+      chuva: 0.2,
+    });
+
+    // Executa a transação real, mas faz o card.create falhar depois que o
+    // remover do card antigo já rodou dentro da transação.
+    const transacaoReal = prisma.$transaction.bind(prisma);
+    vi.spyOn(prisma, '$transaction').mockImplementationOnce((arg: any) =>
+      transacaoReal(async (tx: any) => {
+        const txComFalha = new Proxy(tx, {
+          get(alvo, propriedade) {
+            if (propriedade === 'card') {
+              return new Proxy(alvo.card, {
+                get(cardAlvo, metodo) {
+                  if (metodo === 'create') {
+                    return () => {
+                      throw new Error('falha simulada no create');
+                    };
+                  }
+                  return Reflect.get(cardAlvo, metodo);
+                },
+              });
+            }
+            return Reflect.get(alvo, propriedade);
+          },
+        });
+        return arg(txComFalha);
+      }),
+    );
+
+    const resposta = await request(app).post('/cards').send({
+      cidade: 'São Paulo',
+      atividadeId: cardAntigo.atividadeId,
+    });
+
+    expect(resposta.status).toBe(500);
+    expect(mock.isDone()).toBe(true);
+
+    // O card antigo sobrevive ao rollback e nenhum histórico foi gravado.
+    const cardPreservado = await prisma.card.findUnique({
+      where: { id: cardAntigo.id },
+    });
+    expect(cardPreservado).not.toBeNull();
+    expect(await prisma.card.count()).toBe(1);
+    expect(await prisma.historico.count()).toBe(0);
+  });
+
   it('retorna status 400 quando a cidade não é informada', async () => {
     const atividade = await prisma.atividade.findUniqueOrThrow({
       where: { nome: 'Correr' },
@@ -563,9 +616,7 @@ describe('GET /cards/:id/forecast', () => {
 // ======================================================
 
 describe('Falhas conhecidas da API', () => {
-  // O histórico atualmente registra "Novo Card"
-  // em vez do ID real do card criado.
-  it.fails('CREATE deve registrar o ID real do card no histórico', async () => {
+  it('CREATE deve registrar o ID real do card no histórico', async () => {
     const atividade = await prisma.atividade.findUniqueOrThrow({
       where: { nome: 'Correr' },
     });

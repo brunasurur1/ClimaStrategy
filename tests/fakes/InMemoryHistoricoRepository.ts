@@ -9,4 +9,14 @@ export class InMemoryHistoricoRepository implements HistoricoRepository {
   async registrar(entrada: EntradaHistorico): Promise<void> {
     this.entradas.push(entrada);
   }
+
+  /** Captura o estado atual para permitir rollback nos testes. */
+  snapshot(): EntradaHistorico[] {
+    return [...this.entradas];
+  }
+
+  /** Restaura o estado capturado por {@link snapshot}. */
+  restaurar(estado: EntradaHistorico[]): void {
+    this.entradas = [...estado];
+  }
 }

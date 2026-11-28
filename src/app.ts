@@ -1,10 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { CardService } from './domain/CardService';
-import { montarCardService } from './main';
+import { montarCasosDeUso, type CasosDeUso } from './main';
 
 // Função principal para iniciar o servidor
-export function createApp(cardService: CardService = montarCardService()) {
+export function createApp(casosDeUso: CasosDeUso = montarCasosDeUso()) {
   const app = express();
 
   // Middlewares
@@ -16,7 +15,7 @@ export function createApp(cardService: CardService = montarCardService()) {
   // [GET] /atividades - Lista atividades para o <select> do frontend
   app.get('/atividades', async (req, res) => {
     try {
-      const atividades = await cardService.listarAtividades();
+      const atividades = await casosDeUso.listarAtividades.executar();
       res.json(atividades);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -26,7 +25,7 @@ export function createApp(cardService: CardService = montarCardService()) {
   // [GET] /cards - (READ) Lista todos os cards
   app.get('/cards', async (req, res) => {
     try {
-      const cards = await cardService.listarCards();
+      const cards = await casosDeUso.listarCards.executar();
       res.json(cards);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -42,7 +41,7 @@ export function createApp(cardService: CardService = montarCardService()) {
           .status(400)
           .json({ message: 'Cidade e atividadeId são obrigatórios.' });
       }
-      const novoCard = await cardService.criarCard(cidade, atividadeId);
+      const novoCard = await casosDeUso.criarCard.executar(cidade, atividadeId);
       res.status(201).json(novoCard);
     } catch (error: any) {
       // Captura erros específicos, como cidade não encontrada pela API
@@ -54,7 +53,7 @@ export function createApp(cardService: CardService = montarCardService()) {
   app.put('/cards/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      const cardAtualizado = await cardService.atualizarCard(id);
+      const cardAtualizado = await casosDeUso.atualizarCard.executar(id);
       res.json(cardAtualizado);
     } catch (error: any) {
       if (error.message === 'Card não encontrado.') {
@@ -68,7 +67,7 @@ export function createApp(cardService: CardService = montarCardService()) {
   app.delete('/cards/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      await cardService.deletarCard(id);
+      await casosDeUso.excluirCard.executar(id);
       res.status(204).send(); // 204 No Content
     } catch (error: any) {
       if (error.message.includes('Record to delete does not exist')) {
@@ -78,17 +77,18 @@ export function createApp(cardService: CardService = montarCardService()) {
     }
   });
 
-  // [GET] /cards/:id/forecast - (ROTA ATUALIZADA E CORRIGIDA)
+  // [GET] /cards/:id/forecast - Previsão com a estratégia por dia
   app.get('/cards/:id/forecast', async (req, res) => {
     try {
       const { id } = req.params;
 
-      // Delega TODA a lógica para o serviço
-      const previsaoComEstrategia = await cardService.obterPrevisaoParaCard(id);
+      // Delega TODA a lógica para o caso de uso
+      const previsaoComEstrategia =
+        await casosDeUso.obterPrevisaoDoCard.executar(id);
 
       res.json(previsaoComEstrategia);
     } catch (error: any) {
-      // Se o service der 'throw', nós o capturamos aqui
+      // Se o caso de uso der 'throw', nós o capturamos aqui
       if (error.message === 'Card não encontrado.') {
         res.status(404).json({ message: error.message });
       } else {
