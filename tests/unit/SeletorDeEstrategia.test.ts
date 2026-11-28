@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { SeletorDeEstrategia } from '../../src/domain/logica/SeletorDeEstrategia';
 import { EstrategiaNaoRegistradaError } from '../../src/domain/logica/EstrategiaNaoRegistradaError';
-import type { CondicoesClimaticas } from '../../src/domain/interfaces/clima.interfaces';
+import type { CondicoesClimaticas } from '../../src/domain/interfaces/CondicoesClimaticas';
 
 describe('SeletorDeEstrategia', () => {
   const seletor = new SeletorDeEstrategia();
@@ -29,9 +29,9 @@ describe('SeletorDeEstrategia', () => {
   });
 
   it('aplica a estratégia escolhida ao clima (praia com frio é FRIO)', () => {
-    expect(seletor.processar('praia', { ...climaBase, temperatura: 18 })).toEqual(
-      { apropriado: false, motivo: 'FRIO' },
-    );
+    expect(
+      seletor.processar('praia', { ...climaBase, temperatura: 18 }),
+    ).toEqual({ apropriado: false, motivo: 'FRIO' });
   });
 
   it('lança EstrategiaNaoRegistradaError para chave não registrada', () => {

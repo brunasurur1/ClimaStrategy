@@ -1,4 +1,4 @@
-import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
+import type { CondicoesClimaticas } from '../interfaces/CondicoesClimaticas';
 
 /**
  * Motivos possíveis para o veredito de uma estratégia.
@@ -7,11 +7,7 @@ import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
  * a frase e o emoji ficam na camada de apresentação (front).
  */
 export type MotivoAvaliacao =
-  | 'FAVORAVEL'
-  | 'CHUVA_FORTE'
-  | 'CALOR_EXCESSIVO'
-  | 'FRIO'
-  | 'VENTO_FORTE';
+  'FAVORAVEL' | 'CHUVA_FORTE' | 'CALOR_EXCESSIVO' | 'FRIO' | 'VENTO_FORTE';
 
 /**
  * Resultado estruturado da avaliação de uma estratégia.

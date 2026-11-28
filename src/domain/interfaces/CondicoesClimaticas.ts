@@ -18,3 +18,13 @@ export interface CondicoesClimaticas {
   /** Data da previsão, quando disponível. */
   data?: string;
 }
+
+export interface ClimaDaCidade {
+  dados: CondicoesClimaticas;
+  nomeCidade: string;
+}
+
+export interface ProvedorClima {
+  buscarClima(cidade: string): Promise<ClimaDaCidade>;
+  buscarPrevisaoFutura(cidade: string): Promise<CondicoesClimaticas[]>;
+}
