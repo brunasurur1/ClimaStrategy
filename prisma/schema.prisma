@@ -13,7 +13,8 @@ datasource db {
 // Modelo para guardar os tipos de atividades disponíveis
 model Atividade {
   id    String @id @default(cuid())
-  nome  String @unique // "Correr", "Praia", "Piquenique"
+  nome  String @unique // Nome exibido: "Correr", "Praia/Piscina", "Piquenique"
+  chave String @unique // Chave estável de roteamento: "correr", "praia", "piquenique"
   cards Card[] // Relação: Uma atividade pode estar em muitos cards
 }
 

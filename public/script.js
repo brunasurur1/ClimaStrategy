@@ -38,7 +38,6 @@ const MOTIVOS_CONHECIDOS = [
   'CALOR_EXCESSIVO',
   'FRIO',
   'VENTO_FORTE',
-  'ATIVIDADE_DESCONHECIDA',
 ];
 
 // Normaliza o nome da atividade para a chave do mapa (ex.: "Praia/Piscina" -> "praia").
