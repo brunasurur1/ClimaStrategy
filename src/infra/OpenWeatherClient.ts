@@ -58,13 +58,13 @@ export class OpenWeatherClient implements ProvedorClima {
       const previsoesDiarias: CondicoesClimaticas[] = [];
       const diasProcessados = new Set<string>();
 
-      // O 'list' contém previsões a cada 3h
+      // O 'list' contém previsões a cada 3h, em UTC, no formato "YYYY-MM-DD HH:MM:SS".
+      // Lemos o texto direto, sem Date, para o resultado não depender do fuso do computador.
       for (const previsao of resposta.list) {
-        const data = new Date(previsao.dt_txt);
-        const dia = data.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+        const [dia, hora] = previsao.dt_txt.split(' ');
 
-        // Só o registro do meio-dia (12:00) de um dia ainda não adicionado
-        if (data.getUTCHours() === 12 && !diasProcessados.has(dia)) {
+        // Só o registro do meio-dia (12:00 UTC) de um dia ainda não adicionado
+        if (hora.startsWith('12:') && !diasProcessados.has(dia)) {
           diasProcessados.add(dia);
 
           previsoesDiarias.push({
