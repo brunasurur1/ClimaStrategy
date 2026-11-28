@@ -11,8 +11,7 @@ export type MotivoAvaliacao =
   | 'CHUVA_FORTE'
   | 'CALOR_EXCESSIVO'
   | 'FRIO'
-  | 'VENTO_FORTE'
-  | 'ATIVIDADE_DESCONHECIDA';
+  | 'VENTO_FORTE';
 
 /**
  * Resultado estruturado da avaliação de uma estratégia.

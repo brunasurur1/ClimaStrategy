@@ -1,6 +1,6 @@
-import { criarResultado } from './IEstrategia';
 import type { IEstrategia, ResultadoAvaliacao } from './IEstrategia';
 import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
+import { EstrategiaNaoRegistradaError } from './EstrategiaNaoRegistradaError';
 
 import {
   EstrategiaCorrer,
@@ -30,7 +30,7 @@ export class TradutorClima {
         break;
 
       default:
-        return criarResultado('ATIVIDADE_DESCONHECIDA');
+        throw new EstrategiaNaoRegistradaError(atividade);
     }
 
     return estrategia.avaliar(clima);

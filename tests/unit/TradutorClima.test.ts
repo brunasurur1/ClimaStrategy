@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { TradutorClima } from '../../src/logica/TradutorClima';
+import { EstrategiaNaoRegistradaError } from '../../src/logica/EstrategiaNaoRegistradaError';
 import type { CondicoesClimaticas } from '../../src/interfaces/clima.interfaces';
 
 describe('TradutorClima', () => {
@@ -33,11 +34,10 @@ describe('TradutorClima', () => {
     );
   });
 
-  it('retorna motivo de atividade desconhecida para atividade não mapeada', () => {
-    expect(tradutor.processar('Futebol', climaBase)).toEqual({
-      apropriado: false,
-      motivo: 'ATIVIDADE_DESCONHECIDA',
-    });
+  it('lança erro de domínio para atividade não mapeada', () => {
+    expect(() => tradutor.processar('Futebol', climaBase)).toThrow(
+      EstrategiaNaoRegistradaError,
+    );
   });
 
   it('reconhece atividades independentemente de maiúsculas e minúsculas', () => {
