@@ -7,10 +7,20 @@ import type {
 import type { InMemoryAtividadeRepository } from './InMemoryAtividadeRepository';
 
 export class InMemoryCardRepository implements CardRepository {
-  private readonly cards = new Map<string, Card>();
+  private cards = new Map<string, Card>();
   private sequencia = 0;
 
   constructor(private readonly atividades: InMemoryAtividadeRepository) {}
+
+  /** Captura o estado atual para permitir rollback nos testes. */
+  snapshot(): Map<string, Card> {
+    return new Map(this.cards);
+  }
+
+  /** Restaura o estado capturado por {@link snapshot}. */
+  restaurar(estado: Map<string, Card>): void {
+    this.cards = new Map(estado);
+  }
 
   async criar(dados: DadosDoCard): Promise<Card> {
     this.sequencia += 1;
