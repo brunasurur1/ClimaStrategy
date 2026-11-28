@@ -1,14 +1,14 @@
 import { prisma } from '../prismaClient';
 import { WeatherService } from './WeatherService';
-import { TradutorClima } from '../logica/TradutorClima';
+import { SeletorDeEstrategia } from '../logica/SeletorDeEstrategia';
 
 export class CardService {
   private weatherService: WeatherService;
-  private tradutorClima: TradutorClima;
+  private seletorDeEstrategia: SeletorDeEstrategia;
 
   constructor() {
     this.weatherService = new WeatherService();
-    this.tradutorClima = new TradutorClima();
+    this.seletorDeEstrategia = new SeletorDeEstrategia();
   }
 
   // Cria um novo card, buscando o clima e aplicando a estratégia.
@@ -43,7 +43,10 @@ export class CardService {
     }
 
     // 3. Aplicar a estratégia utilizando a interface climática unificada
-    const resultado = this.tradutorClima.processar(atividade.nome, dadosClima);
+    const resultado = this.seletorDeEstrategia.processar(
+      atividade.chave,
+      dadosClima,
+    );
 
     // 4. Salvar o Card e o Histórico em uma Transação
     const [cardSalvo] = await prisma.$transaction([
@@ -110,8 +113,8 @@ export class CardService {
 
     // 3. Aplicar a estratégia em cada dia da previsão
     const resultados = previsoes.map((dadosDia) => {
-      const resultado = this.tradutorClima.processar(
-        card.atividade.nome,
+      const resultado = this.seletorDeEstrategia.processar(
+        card.atividade.chave,
         dadosDia,
       );
 
@@ -146,8 +149,8 @@ export class CardService {
       await this.weatherService.buscarClima(cardAtual.cidade);
 
     // 3. Faz a avaliação utilizando a interface climática unificada
-    const resultado = this.tradutorClima.processar(
-      cardAtual.atividade.nome,
+    const resultado = this.seletorDeEstrategia.processar(
+      cardAtual.atividade.chave,
       dadosClima,
     );
 

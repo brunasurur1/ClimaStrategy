@@ -5,9 +5,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const atividadesData = [
-  { nome: 'Correr' },
-  { nome: 'Praia/Piscina' },
-  { nome: 'Piquenique' },
+  { nome: 'Correr', chave: 'correr' },
+  { nome: 'Praia/Piscina', chave: 'praia' },
+  { nome: 'Piquenique', chave: 'piquenique' },
 ];
 
 async function main() {
@@ -17,7 +17,7 @@ async function main() {
     // Usamos 'upsert' para evitar duplicatas se rodarmos o seed várias vezes
     const atividade = await prisma.atividade.upsert({
       where: { nome: data.nome },
-      update: {},
+      update: { chave: data.chave },
       create: data,
     });
     console.log(`Atividade criada ou atualizada: ${atividade.nome}`);

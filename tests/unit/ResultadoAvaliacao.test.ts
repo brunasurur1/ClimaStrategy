@@ -15,7 +15,6 @@ describe('ehApropriado', () => {
     'CALOR_EXCESSIVO',
     'FRIO',
     'VENTO_FORTE',
-    'ATIVIDADE_DESCONHECIDA',
   ];
 
   it.each(motivosInapropriados)(

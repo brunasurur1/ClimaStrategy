@@ -52,9 +52,9 @@ beforeEach(async () => {
   // Insere as atividades iniciais
   await prisma.atividade.createMany({
     data: [
-      { nome: 'Correr' },
-      { nome: 'Praia/Piscina' },
-      { nome: 'Piquenique' },
+      { nome: 'Correr', chave: 'correr' },
+      { nome: 'Praia/Piscina', chave: 'praia' },
+      { nome: 'Piquenique', chave: 'piquenique' },
     ],
   });
 });
