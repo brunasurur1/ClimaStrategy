@@ -1,6 +1,6 @@
 import { criarResultado } from './IEstrategia';
 import type { IEstrategia, ResultadoAvaliacao } from './IEstrategia';
-import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
+import type { CondicoesClimaticas } from '../interfaces/CondicoesClimaticas';
 
 /**
  * Limites de cada atividade (antes eram números mágicos).

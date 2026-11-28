@@ -3,7 +3,7 @@ import {
   ehApropriado,
   criarResultado,
   type MotivoAvaliacao,
-} from '../../src/logica/IEstrategia';
+} from '../../src/domain/logica/IEstrategia';
 
 describe('ehApropriado', () => {
   it('considera FAVORAVEL como apropriado', () => {

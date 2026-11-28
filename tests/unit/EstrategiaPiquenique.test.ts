@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { EstrategiaPiquenique } from '../../src/logica/EstrategiasConcretas';
-import type { CondicoesClimaticas } from '../../src/interfaces/clima.interfaces';
+import { EstrategiaPiquenique } from '../../src/domain/logica/EstrategiasConcretas';
+import type { CondicoesClimaticas } from '../../src/domain/interfaces/CondicoesClimaticas';
 
 describe('EstrategiaPiquenique', () => {
   const estrategia = new EstrategiaPiquenique();

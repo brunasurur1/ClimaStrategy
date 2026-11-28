@@ -1,17 +1,15 @@
 import express from 'express';
 import cors from 'cors';
-import { CardService } from './services/CardService';
+import { CardService } from './domain/CardService';
+import { montarCardService } from './main';
 
 // Função principal para iniciar o servidor
-export function createApp() {
+export function createApp(cardService: CardService = montarCardService()) {
   const app = express();
 
   // Middlewares
   app.use(cors()); // Permite acesso do frontend (Fase 4)
   app.use(express.json()); // Habilita o parsing de JSON no body
-
-  // Instancia nosso serviço principal
-  const cardService = new CardService();
 
   // --- DEFINIÇÃO DAS ROTAS (CONTROLLERS) ---
 
