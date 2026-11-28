@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EstrategiaNaoRegistradaError } from '../../src/logica/EstrategiaNaoRegistradaError';
+import { EstrategiaNaoRegistradaError } from '../../src/domain/logica/EstrategiaNaoRegistradaError';
 
 describe('EstrategiaNaoRegistradaError', () => {
   it('é uma instância de Error', () => {

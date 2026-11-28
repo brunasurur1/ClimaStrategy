@@ -1,6 +1,6 @@
 import { prisma } from '../prismaClient';
-import { WeatherService } from './WeatherService';
-import { SeletorDeEstrategia } from '../logica/SeletorDeEstrategia';
+import { WeatherService } from '../infra/WeatherService';
+import { SeletorDeEstrategia } from './logica/SeletorDeEstrategia';
 
 export class CardService {
   private weatherService: WeatherService;

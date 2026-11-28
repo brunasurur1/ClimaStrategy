@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { SeletorDeEstrategia } from '../../src/logica/SeletorDeEstrategia';
-import { EstrategiaNaoRegistradaError } from '../../src/logica/EstrategiaNaoRegistradaError';
-import type { CondicoesClimaticas } from '../../src/interfaces/clima.interfaces';
+import { SeletorDeEstrategia } from '../../src/domain/logica/SeletorDeEstrategia';
+import { EstrategiaNaoRegistradaError } from '../../src/domain/logica/EstrategiaNaoRegistradaError';
+import type { CondicoesClimaticas } from '../../src/domain/interfaces/clima.interfaces';
 
 describe('SeletorDeEstrategia', () => {
   const seletor = new SeletorDeEstrategia();

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { CondicoesClimaticas } from '../interfaces/clima.interfaces';
+import type { CondicoesClimaticas } from '../domain/interfaces/clima.interfaces';
 
 export class WeatherService {
   private readonly apiKey: string;

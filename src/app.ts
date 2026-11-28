@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { CardService } from './services/CardService';
+import { CardService } from './domain/CardService';
 
 // Função principal para iniciar o servidor
 export function createApp() {
