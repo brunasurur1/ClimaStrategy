@@ -1,6 +1,72 @@
 // Configuração da API
 const API_URL = 'http://localhost:3000';
 
+// ======================================================
+// CAMADA DE APRESENTAÇÃO (issue #7)
+// O backend envia apenas dados: { apropriado, motivo }.
+// A frase e o emoji são decididos aqui, no front.
+// ======================================================
+
+// Limites usados pelo visual do clima (mesmos valores das estratégias no backend).
+const LIMITE_CHUVA_ALTA = 50; // % de chance de chuva
+const LIMITE_CHUVA_MEDIA = 25; // % de chance de chuva
+const LIMITE_TEMP_QUENTE = 23; // °C
+
+// Mapa (atividade normalizada -> motivo -> frase). Preserva as frases originais.
+const FRASES_POR_ATIVIDADE = {
+  correr: {
+    FAVORAVEL: '🏃‍♂️ Clima perfeito para sua corrida! Aproveite.',
+    CHUVA_FORTE: '🌧️ Melhor evitar: Alta chance de chuva e pista escorregadia.',
+    CALOR_EXCESSIVO:
+      '🥵 Atenção: Calor excessivo! Hidrate-se muito ou corra na esteira.',
+  },
+  praia: {
+    FAVORAVEL: '🏖️ Dia lindo! Não esqueça o protetor solar.',
+    FRIO: '🥶 Está um pouco frio para pegar sol/mar hoje.',
+    CHUVA_FORTE: '☁️ O tempo está fechando. Risco de perder a viagem.',
+  },
+  piquenique: {
+    FAVORAVEL: '🧺 O parque espera por você! Ótimo clima.',
+    VENTO_FORTE: '🌬️ Vento muito forte! Vai ser difícil segurar as toalhas.',
+    CHUVA_FORTE: '☔ Risco de chuva. Piquenique em local coberto seria melhor.',
+  },
+};
+
+const MOTIVOS_CONHECIDOS = [
+  'FAVORAVEL',
+  'CHUVA_FORTE',
+  'CALOR_EXCESSIVO',
+  'FRIO',
+  'VENTO_FORTE',
+  'ATIVIDADE_DESCONHECIDA',
+];
+
+// Normaliza o nome da atividade para a chave do mapa (ex.: "Praia/Piscina" -> "praia").
+function normalizarAtividade(nome) {
+  const chave = (nome || '').toLowerCase();
+  if (chave === 'praia/piscina') return 'praia';
+  return chave;
+}
+
+// Deriva "apropriado" do motivo (espelha ehApropriado no backend).
+function motivoEhApropriado(motivo) {
+  return motivo === 'FAVORAVEL';
+}
+
+// Traduz um motivo na frase da atividade. Faz fallback para cards antigos,
+// cujo condicaoAtual ainda guarda a frase inteira em vez do motivo.
+function traduzirMotivo(atividadeNome, motivo) {
+  const frasesAtividade = FRASES_POR_ATIVIDADE[normalizarAtividade(atividadeNome)];
+  const frase = frasesAtividade && frasesAtividade[motivo];
+  if (frase) return frase;
+  // Fallback: valor desconhecido (card antigo com a frase crua) -> mostra como veio.
+  return motivo;
+}
+
+function motivoConhecido(valor) {
+  return MOTIVOS_CONHECIDOS.includes(valor);
+}
+
 // Elementos do DOM
 let formBusca, selectAtividade, inputCidade, dashboardContainer, loadingMessage;
 let modalOverlay, modalContent, modalCloseBtn, modalTitulo, modalBody;
@@ -150,21 +216,21 @@ function obterVisualClima(card) {
     const chanceChuva = card.precipitacaoProbabilidade || 0;
     const temp = card.temperatura || 0;
 
-    if (chanceChuva >= 50) {
+    if (chanceChuva >= LIMITE_CHUVA_ALTA) {
       return { 
           classe: 'clima-chuva', 
           imagem: 'https://cdn-icons-png.flaticon.com/512/4088/4088981.png' 
       };
     }
 
-    if (chanceChuva >= 25) {
+    if (chanceChuva >= LIMITE_CHUVA_MEDIA) {
        return {
           classe: 'clima-frio', 
           imagem: 'https://cdn-icons-png.flaticon.com/512/414/414927.png' 
        };
     }
 
-    if (temp >= 23) {
+    if (temp >= LIMITE_TEMP_QUENTE) {
       return { 
           classe: 'clima-sol', 
           imagem: 'https://cdn-icons-png.flaticon.com/512/869/869869.png' 
@@ -185,19 +251,18 @@ function criarElementoCard(card) {
   cardDiv.className = `card ${visual.classe}`;
   cardDiv.id = `card-${card.id}`;
 
- // Lógica para aceitar frases positivas
-const texto = card.condicaoAtual;
+ // O backend envia o motivo em condicaoAtual; a cor e a frase saem dele.
+const motivo = card.condicaoAtual;
+const ehCardAntigo = !motivoConhecido(motivo);
 
-// Consideramos "Verde" se for Apropriado OU tiver palavras positivas
-const ehBom = texto === 'Apropriado' 
-           || texto.includes('Perfeito') 
-           || texto.includes('Ótimo') 
-           || texto.includes('lindo') 
-           || texto.includes('Aproveite');
+// Card antigo (frase crua, pré issue #7): visual neutro e texto como veio.
+const condicaoClasse = ehCardAntigo
+  ? 'neutro'
+  : motivoEhApropriado(motivo)
+    ? 'apropriado'
+    : 'inapropriado';
 
-const condicaoClasse = ehBom ? 'apropriado' : 'inapropriado';
-
-// FIM MUDANÇA BRUNA
+const fraseCondicao = traduzirMotivo(card.atividade.nome, motivo);
 
   cardDiv.innerHTML = `
     <img src="${visual.imagem}" alt="Ícone Clima" class="icone-clima-img">
@@ -210,7 +275,7 @@ const condicaoClasse = ehBom ? 'apropriado' : 'inapropriado';
         </div>
       </div>
       <div class="card-condicao ${condicaoClasse}">
-        ${card.condicaoAtual}
+        ${fraseCondicao}
       </div>
       <ul class="card-info">
         <li><strong>🌡️ Temperatura:</strong> ${card.temperatura.toFixed(1)}°C</li>
@@ -277,11 +342,15 @@ async function handleAbrirModal(id, cidade, atividadeNome) {
       dataTexto = dataTexto.charAt(0).toUpperCase() + dataTexto.slice(1);
 
       const condicaoClasse = resultado.apropriado ? 'apropriado' : 'inapropriado';
-      const textoCondicao = resultado.apropriado ? 'Apropriado' : 'Inapropriado';
-      
+      const fraseDia = traduzirMotivo(atividadeNome, resultado.motivo);
+
       div.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h4 style="margin:0; font-size: 1.1em; color: #80D0C7;">📅 ${dataTexto}</h4>
+        </div>
+
+        <div class="card-condicao ${condicaoClasse}" style="margin-bottom: 10px;">
+          ${fraseDia}
         </div>
 
         <ul class="card-info" style="border:none; padding: 0;">

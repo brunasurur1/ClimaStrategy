@@ -13,51 +13,49 @@ describe('EstrategiaPraia', () => {
     data: '2026-11-25',
   };
 
-  const climaFavoravel = '🏖️ Dia lindo! Não esqueça o protetor solar.';
-
-  const alertaFrio = '🥶 Está um pouco frio para pegar sol/mar hoje.';
-
-  const alertaChuva = '☁️ O tempo está fechando. Risco de perder a viagem.';
+  const favoravel = { apropriado: true, motivo: 'FAVORAVEL' };
+  const alertaFrio = { apropriado: false, motivo: 'FRIO' };
+  const alertaChuva = { apropriado: false, motivo: 'CHUVA_FORTE' };
 
   it('emite alerta de frio com temperatura de 22°C', () => {
     const clima = { ...climaBase, temperatura: 22 };
 
-    expect(estrategia.avaliar(clima)).toBe(alertaFrio);
+    expect(estrategia.avaliar(clima)).toEqual(alertaFrio);
   });
 
   it('considera favorável a temperatura de exatamente 23°C', () => {
     const clima = { ...climaBase, temperatura: 23 };
 
-    expect(estrategia.avaliar(clima)).toBe(climaFavoravel);
+    expect(estrategia.avaliar(clima)).toEqual(favoravel);
   });
 
   it('considera favorável a temperatura de 24°C', () => {
     const clima = { ...climaBase, temperatura: 24 };
 
-    expect(estrategia.avaliar(clima)).toBe(climaFavoravel);
+    expect(estrategia.avaliar(clima)).toEqual(favoravel);
   });
 
   it('considera favorável a chance de chuva de 29%', () => {
     const clima = { ...climaBase, probabilidadeChuva: 29 };
 
-    expect(estrategia.avaliar(clima)).toBe(climaFavoravel);
+    expect(estrategia.avaliar(clima)).toEqual(favoravel);
   });
 
   it('considera favorável exatamente 30% de chance de chuva', () => {
     const clima = { ...climaBase, probabilidadeChuva: 30 };
 
-    expect(estrategia.avaliar(clima)).toBe(climaFavoravel);
+    expect(estrategia.avaliar(clima)).toEqual(favoravel);
   });
 
   it('emite alerta com 31% de chance de chuva', () => {
     const clima = { ...climaBase, probabilidadeChuva: 31 };
 
-    expect(estrategia.avaliar(clima)).toBe(alertaChuva);
+    expect(estrategia.avaliar(clima)).toEqual(alertaChuva);
   });
 
   it('prioriza o alerta de frio sobre o alerta de chuva', () => {
     const clima = { ...climaBase, temperatura: 22, probabilidadeChuva: 31 };
 
-    expect(estrategia.avaliar(clima)).toBe(alertaFrio);
+    expect(estrategia.avaliar(clima)).toEqual(alertaFrio);
   });
 });

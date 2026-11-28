@@ -267,6 +267,13 @@ h2 {
   border: 1px solid rgba(255, 71, 87, 0.6);
 }
 
+/* Cards antigos (pré issue #7), sem motivo reconhecido: visual neutro */
+.card-condicao.neutro {
+  background-color: rgba(149, 165, 166, 0.35); /* Cinza vidro */
+  color: #fff;
+  border: 1px solid rgba(149, 165, 166, 0.6);
+}
+
 /* Informações */
 .card-info li {
   margin-bottom: 10px;
